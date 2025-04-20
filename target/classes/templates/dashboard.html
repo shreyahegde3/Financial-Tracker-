@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Dashboard - Financial Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .feature-card {
+            transition: transform 0.2s;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .dashboard-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .summary-card {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">Financial Tracker</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/income">Income</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/expenses">Expenses</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/budgets">Budgets</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/goals">Goals</a>
+                    </li>
+                </ul>
+                <form th:action="@{/logout}" method="post" class="d-flex">
+                    <button class="btn btn-outline-light" type="submit">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Financial Summary Section -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card summary-card bg-success text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Income</h5>
+                        <h3 class="card-text">$<span th:text="${#numbers.formatDecimal(totalIncome, 0, 'COMMA', 2, 'POINT')}">0.00</span></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card summary-card bg-danger text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Expenses</h5>
+                        <h3 class="card-text">$<span th:text="${#numbers.formatDecimal(totalExpenses, 0, 'COMMA', 2, 'POINT')}">0.00</span></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card summary-card bg-info text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Net Balance</h5>
+                        <h3 class="card-text">$<span th:text="${#numbers.formatDecimal(netBalance, 0, 'COMMA', 2, 'POINT')}">0.00</span></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Access Cards -->
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 feature-card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-wallet2 dashboard-icon text-success"></i>
+                        <h5 class="card-title">Income</h5>
+                        <p class="card-text">Track your income sources and manage your earnings</p>
+                        <a href="/income" class="btn btn-success">Manage Income</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 feature-card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-cart-check dashboard-icon text-danger"></i>
+                        <h5 class="card-title">Expenses</h5>
+                        <p class="card-text">Monitor and categorize your daily expenses</p>
+                        <a href="/expenses" class="btn btn-danger">Track Expenses</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 feature-card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-pie-chart dashboard-icon text-primary"></i>
+                        <h5 class="card-title">Budgets</h5>
+                        <p class="card-text">Set and manage your monthly budgets</p>
+                        <a href="/budgets" class="btn btn-primary">Plan Budget</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 feature-card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-trophy dashboard-icon text-warning"></i>
+                        <h5 class="card-title">Goals</h5>
+                        <p class="card-text">Set and track your financial goals</p>
+                        <a href="/goals" class="btn btn-warning">Set Goals</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Goals Section -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Financial Goals</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${goals.empty}" class="text-center">
+                            <p>No financial goals set yet. <a href="/goals">Create your first goal!</a></p>
+                        </div>
+                        <div th:unless="${goals.empty}" class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Goal</th>
+                                        <th>Target Amount</th>
+                                        <th>Current Amount</th>
+                                        <th>Progress</th>
+                                        <th>Target Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="goal : ${goals}">
+                                        <td th:text="${goal.name}">Goal Name</td>
+                                        <td>$<span th:text="${#numbers.formatDecimal(goal.targetAmount, 0, 'COMMA', 2, 'POINT')}">0.00</span></td>
+                                        <td>$<span th:text="${#numbers.formatDecimal(goal.currentAmount, 0, 'COMMA', 2, 'POINT')}">0.00</span></td>
+                                        <td>
+                                            <div class="progress">
+                                                <div class="progress-bar bg-success" role="progressbar"
+                                                     th:style="'width: ' + ${(goal.currentAmount / goal.targetAmount) * 100} + '%'"
+                                                     th:text="${#numbers.formatDecimal((goal.currentAmount / goal.targetAmount) * 100, 0, 0)} + '%'">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td th:text="${#temporals.format(goal.targetDate, 'MMM dd, yyyy')}">Target Date</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

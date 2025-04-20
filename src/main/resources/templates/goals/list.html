@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Financial Goals - Financial Tracker</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Financial Tracker</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/income">Income</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/expenses">Expenses</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/budgets">Budgets</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/goals">Goals</a>
+                    </li>
+                </ul>
+                <form th:action="@{/logout}" method="post" class="d-flex">
+                    <span class="navbar-text me-3" sec:authentication="name"></span>
+                    <button class="btn btn-outline-light" type="submit">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Add New Goal</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/goals}" th:object="${goal}" method="post">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Goal Name</label>
+                                <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                                <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="targetAmount" class="form-label">Target Amount</label>
+                                <input type="number" step="0.01" class="form-control" id="targetAmount" th:field="*{targetAmount}" required>
+                                <div class="text-danger" th:if="${#fields.hasErrors('targetAmount')}" th:errors="*{targetAmount}"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="currentAmount" class="form-label">Current Amount</label>
+                                <input type="number" step="0.01" class="form-control" id="currentAmount" th:field="*{currentAmount}" required>
+                                <div class="text-danger" th:if="${#fields.hasErrors('currentAmount')}" th:errors="*{currentAmount}"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="targetDate" class="form-label">Target Date</label>
+                                <input type="date" class="form-control" id="targetDate" th:field="*{targetDate}" required>
+                                <div class="text-danger" th:if="${#fields.hasErrors('targetDate')}" th:errors="*{targetDate}"></div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Goal</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Goals Progress</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Goal</th>
+                                        <th>Target Amount</th>
+                                        <th>Current Amount</th>
+                                        <th>Progress</th>
+                                        <th>Target Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="goal : ${goals}">
+                                        <td th:text="${goal.name}"></td>
+                                        <td th:text="${'$' + #numbers.formatDecimal(goal.targetAmount, 0, 'COMMA', 2, 'POINT')}"></td>
+                                        <td th:text="${'$' + #numbers.formatDecimal(goal.currentAmount, 0, 'COMMA', 2, 'POINT')}"></td>
+                                        <td>
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" 
+                                                     th:style="'width: ' + ${(goal.currentAmount / goal.targetAmount * 100)} + '%'"
+                                                     th:text="${#numbers.formatDecimal(goal.currentAmount / goal.targetAmount * 100, 0, 'COMMA', 1, 'POINT')} + '%'">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td th:text="${#temporals.format(goal.targetDate, 'yyyy-MM-dd')}"></td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-success" 
+                                                    th:onclick="'updateProgress(' + ${goal.id} + ')'">
+                                                Update Progress
+                                            </button>
+                                            <a th:href="@{/goals/{id}/edit(id=${goal.id})}" class="btn btn-sm btn-primary">Edit</a>
+                                            <form th:action="@{/goals/{id}/delete(id=${goal.id})}" method="post" style="display: inline;">
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Update Modal -->
+    <div class="modal fade" id="progressModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Progress</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="progressForm" method="post">
+                        <div class="mb-3">
+                            <label for="newAmount" class="form-label">New Amount</label>
+                            <input type="number" step="0.01" class="form-control" id="newAmount" name="amount" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" form="progressForm" class="btn btn-primary">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let progressModal;
+        document.addEventListener('DOMContentLoaded', function() {
+            progressModal = new bootstrap.Modal(document.getElementById('progressModal'));
+        });
+
+        function updateProgress(goalId) {
+            const form = document.getElementById('progressForm');
+            form.action = `/goals/${goalId}/update-progress`;
+            progressModal.show();
+        }
+    </script>
+</body>
+</html>

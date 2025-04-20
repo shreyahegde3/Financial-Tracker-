@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Edit Goal - Financial Tracker</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Financial Tracker</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/income">Income</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/expenses">Expenses</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/budgets">Budgets</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/goals">Goals</a>
+                    </li>
+                </ul>
+                <form th:action="@{/logout}" method="post" class="d-flex">
+                    <span class="navbar-text me-3" sec:authentication="name"></span>
+                    <button class="btn btn-outline-light" type="submit">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Edit Goal</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/goals/{id}/edit(id=${goal.id})}" th:object="${goal}" method="post">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Goal Name</label>
+                                <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                                <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="targetAmount" class="form-label">Target Amount</label>
+                                <input type="number" step="0.01" class="form-control" id="targetAmount" th:field="*{targetAmount}" required>
+                                <div class="text-danger" th:if="${#fields.hasErrors('targetAmount')}" th:errors="*{targetAmount}"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="currentAmount" class="form-label">Current Amount</label>
+                                <input type="number" step="0.01" class="form-control" id="currentAmount" th:field="*{currentAmount}" required>
+                                <div class="text-danger" th:if="${#fields.hasErrors('currentAmount')}" th:errors="*{currentAmount}"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="targetDate" class="form-label">Target Date</label>
+                                <input type="date" class="form-control" id="targetDate" th:field="*{targetDate}" required>
+                                <div class="text-danger" th:if="${#fields.hasErrors('targetDate')}" th:errors="*{targetDate}"></div>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Update Goal</button>
+                                <a th:href="@{/goals}" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 
