@@ -5,6 +5,8 @@ import com.financialtracker.model.User;
 import com.financialtracker.repository.FinancialGoalRepository;
 import com.financialtracker.repository.UserRepository;
 import com.financialtracker.config.DatabaseConfig;
+import com.financialtracker.facade.FinancialSummaryFacade;
+import com.financialtracker.currency.CurrencyConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,6 +31,18 @@ public class FinancialGoalController {
 
     @Autowired
     private DatabaseConfig databaseConfig;
+
+    @Autowired
+    private FinancialSummaryFacade financialSummaryFacade;
+
+    @Autowired
+    private CurrencyConverter currencyConverter;
+
+    // Homepage route
+    @GetMapping("/")
+    public String home() {
+        return "index";
+    }
 
     @GetMapping
     public String showGoalsList(Model model) {
@@ -140,10 +154,27 @@ public class FinancialGoalController {
         return "redirect:/goals";
     }
 
+    // Endpoint to get financial summary for the logged-in user
+    @GetMapping("/summary")
+    @ResponseBody
+    public FinancialSummaryFacade.FinancialSummary getUserFinancialSummary() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByEmail(auth.getName()).orElseThrow();
+        return financialSummaryFacade.getUserFinancialSummary(user.getId());
+    }
+
     // Example usage of DatabaseConfig in a controller method
     @GetMapping("/db-info")
     @ResponseBody
     public String showDbConfigInfo() {
         return "URL: " + databaseConfig.getUrl() + ", User: " + databaseConfig.getUsername();
+    }
+
+    // Example endpoint: Convert INR to USD
+    @GetMapping("/convert-currency")
+    @ResponseBody
+    public String convertCurrency(@RequestParam double amount, @RequestParam String from, @RequestParam String to) {
+        double converted = currencyConverter.convert(from, to, amount);
+        return String.format("%.2f %s = %.2f %s", amount, from, converted, to);
     }
 } 
