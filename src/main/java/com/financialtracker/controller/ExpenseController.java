@@ -5,6 +5,7 @@ import com.financialtracker.model.User;
 import com.financialtracker.repository.ExpenseRepository;
 import com.financialtracker.repository.UserRepository;
 import com.financialtracker.factory.TransactionFactory;
+import com.financialtracker.flyweight.ExpenseCategoryFlyweightFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -56,12 +57,14 @@ public class ExpenseController {
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = userRepository.findByEmail(auth.getName()).orElseThrow();
+
+            // Use Flyweight pattern for category
+            Expense.ExpenseCategory flyweightCategory = ExpenseCategoryFlyweightFactory.getCategory(expense.getCategory().name());
             
-            // Use TransactionFactory to create the expense
             Expense newExpense = TransactionFactory.createExpense(
                 user,
                 expense.getAmount(),
-                expense.getCategory(),
+                flyweightCategory,
                 expense.getDescription(),
                 expense.getDate() != null ? expense.getDate() : LocalDate.now(),
                 expense.isRecurring()
@@ -97,11 +100,13 @@ public class ExpenseController {
 
             Expense existingExpense = expenseRepository.findById(id).orElseThrow();
             
-            // Use TransactionFactory to create updated expense
+            // Use Flyweight pattern for category
+            Expense.ExpenseCategory flyweightCategory = ExpenseCategoryFlyweightFactory.getCategory(expense.getCategory().name());
+            
             Expense updatedExpense = TransactionFactory.createExpense(
                 existingExpense.getUser(),
                 expense.getAmount(),
-                expense.getCategory(),
+                flyweightCategory,
                 expense.getDescription(),
                 expense.getDate(),
                 expense.isRecurring()

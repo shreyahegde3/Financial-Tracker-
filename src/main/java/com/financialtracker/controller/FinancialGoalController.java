@@ -6,6 +6,7 @@ import com.financialtracker.repository.FinancialGoalRepository;
 import com.financialtracker.repository.UserRepository;
 import com.financialtracker.config.DatabaseConfig;
 import com.financialtracker.facade.FinancialSummaryFacade;
+import com.financialtracker.proxy.CurrencyConverterProxy;
 import com.financialtracker.currency.CurrencyConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -36,7 +37,7 @@ public class FinancialGoalController {
     private FinancialSummaryFacade financialSummaryFacade;
 
     @Autowired
-    private CurrencyConverter currencyConverter;
+    private CurrencyConverterProxy currencyConverterProxy;
 
     // Homepage route
     @GetMapping("/")
@@ -174,7 +175,7 @@ public class FinancialGoalController {
     @GetMapping("/convert-currency")
     @ResponseBody
     public String convertCurrency(@RequestParam double amount, @RequestParam String from, @RequestParam String to) {
-        double converted = currencyConverter.convert(from, to, amount);
+        double converted = currencyConverterProxy.convert(from, to, amount);
         return String.format("%.2f %s = %.2f %s", amount, from, converted, to);
     }
 } 

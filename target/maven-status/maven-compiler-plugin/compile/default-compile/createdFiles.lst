@@ -1,9 +1,11 @@
 com\financialtracker\builder\FinancialGoalBuilder.class
+com\financialtracker\proxy\CurrencyConverterProxy.class
 com\financialtracker\FinancialTrackerApplication.class
 com\financialtracker\config\SecurityConfig.class
 com\financialtracker\controller\ExpenseController.class
 com\financialtracker\controller\BudgetController.class
 com\financialtracker\external\ThirdPartyCurrencyService.class
+com\financialtracker\flyweight\ExpenseCategoryFlyweightFactory.class
 com\financialtracker\prototype\RecurringTransaction.class
 com\financialtracker\service\CustomUserDetailsService.class
 com\financialtracker\model\Income.class
