@@ -104,6 +104,8 @@ public class FinancialSummaryFacade {
 - Used in `FinancialGoalController` to aggregate data from incomes, expenses, budgets, and goals.
 - **Endpoint:** `/goals/summary` (returns a JSON summary for the logged-in user)
 
+  ![image](https://github.com/user-attachments/assets/75522eb7-c629-4da8-8c26-554478e09e13)
+
 **Code Example:**
 ```java
 // In FinancialGoalController
@@ -216,3 +218,10 @@ public class CurrencyConverterProxy implements CurrencyConverter {
 - `src/main/java/com/financialtracker/prototype/RecurringExpense.java`
 - `src/main/java/com/financialtracker/prototype/RecurringIncome.java`
 {{ ... }}
+
+
+![image](https://github.com/user-attachments/assets/3a0a1333-f8a5-42e8-9f53-fb9500772d7d)
+![image](https://github.com/user-attachments/assets/9cd0e246-c75e-43e5-972f-ada5f8d658ff)
+
+
+
